@@ -9,6 +9,6 @@ class Home extends BaseController
     public function index()
     {
         echo "Hello";
-        echo "Vatsal Branch addedd";
+        echo "Vatsal Branch added";
     }
 }
