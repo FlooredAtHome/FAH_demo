@@ -5,6 +5,7 @@ use App\Models\CustomerModel;
 use App\Models\VendorModel;
 use App\Models\LoginModel;
 use App\Models\CommentModel;
+use App\Models\TimingModel;
 
 
 use CodeIgniter\Controller;
@@ -17,6 +18,7 @@ class Admin extends Controller
         $this->customerModel = new CustomerModel();
         $this->vendorModel = new VendorModel();
         $this->commentModel = new CommentModel();
+        $this->timingModel = new TimingModel();
         $this->session = session();
     }
     public function index()
@@ -225,29 +227,57 @@ class Admin extends Controller
         }
     }
     public function customerView()
-    {
-        if($this->session->has("email"))
+    {if($this->session->get("email")!='')
         {
-            $name=[];
-            $time=[];
-            $comment=[];
-            $EMAIL = $this->session->get('email');
-            $userdata = $this->loginModel->verifyEmail($EMAIL);
-            $UID = $this->request->getPost('UID');
-            $comments = $this->commentModel->getComment($UID);
-            for($i=0;$i<count($comments);$i++)
-            {
-                $name[$i]=$comments[$i]->who;
-                $time[$i]=$comments[$i]->when;
-                $comment[$i]=$comments[$i]->comment;
-            }
-            echo view('Admin/customerView',["userid"=>$UID, "name"=>$name, "time"=>$time, "comment"=>$comment]);
+        // $this->timingModel->displayall($uid,$EMAIL,$proptime,$clicked);
+            $email = $this->session->get('email');
+            $userdata = $this->loginModel->verifyEmail($email);
+        //     if($userdata['RID'] == 1){
+        //         $data['email'] = $this->session->get('email');
+        //         $temp1 = $this->timingModel->displayall($rep);
+        //         if($temp1){
+        //             $temp2 = json_encode($temp1);
+        //             for($i=0;$i<count($temp1);$i++){
+        //                 $temp[$i] = (array)$temp1[$i];
+        //                 $UID[$i] = $temp[$i]["UID"];
+        //                 $EMAIL[$i] = $temp[$i]["EMAIL"];
+        //                 if($rep == 'prop')
+        //                     {$TIME[$i] = $temp[$i]["PROPTIME"];}
+        //                 elseif($rep == 'inv')
+        //                     {$TIME[$i] = $temp[$i]["INVTIME"];}
+        //                 elseif($rep == 'login')
+        //                     {$TIME[$i] = $temp[$i]["LOGINTIME"];}
+        //                 $STRINGTIME[$i] = $temp[$i]["STRINGTIME"];
+        //             }
+        //             // echo view('templates/header');
+        //             // echo view('Admin/timelogs',['UID' => $UID, 'EMAIL' => $EMAIL, 'TIME' => $TIME,'STRINGTIME' => $STRINGTIME]);
+        //         }       
+        //         else{
+        //             echo view('templates/header');
+        //         }
+                $UID = $this->request->getPost('UID');
+                $comments = $this->commentModel->getComment($UID);
+                $logs = $this->timingModel->displayall($UID);
+                for($i=0;$i<count($comments);$i++)
+                {
+                    $name[$i]=$comments[$i]->who;
+                    $time[$i]=$comments[$i]->when;
+                    $comment[$i]=$comments[$i]->comment;
+                }
+                echo view('Admin/customerView',["userid"=>$UID, "name"=>$name, "time"=>$time, "comment"=>$comment, 'LOGS' => $logs]);
         }
         else
         {
             return redirect()->to(base_url('FAH'));
         }
     }
+
+    public function timelogs(){
+        {
+            
+        }
+    }
+
     public function Comment()
     {
         if($this->request->getMethod() == 'post')
@@ -311,6 +341,13 @@ class Admin extends Controller
         {
             return redirect()->to(base_url('FAH'));
         }
+    }
+    public function Logloadhandler(){
+            $temp1_1 = file_get_contents('php://input',true);
+            $temp1 = json_decode($temp1_1,true);
+            $uid= $temp1[0]["uid"];
+            $rep = $temp1[0]["rep"];
+            var_dump($rep);
     }
 }
 

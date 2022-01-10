@@ -5,6 +5,7 @@ namespace App\Controllers;
 use CodeIgniter\Controller;
 use App\Models\LoginModel;
 use App\Models\CommentModel;
+use App\Models\TimingModel;
 use CodeIgniter\I18n\Time;
 
 class UserHome extends Controller
@@ -13,11 +14,30 @@ class UserHome extends Controller
     
     public function __construct() {
         helper('form');
+        $this->timingModel = new TimingModel();
         $this->loginModel = new LoginModel();
         $this->commentModel = new CommentModel();
         $this->session = session();
     }
-
+    public function proptime(){
+        $EMAIL=$this->session->get('email');
+        $userdata = $this->loginModel->verifyEmail($EMAIL);
+        $uid=$userdata['UID'];
+        $model = new TimingModel();
+        $this->timingModel->timeclick($uid);
+        exit;
+    }
+    public function JSONhandler(){
+        $temp1_1 = file_get_contents('php://input',true);
+        $temp1 = json_decode($temp1_1,true);
+        $EMAIL= $temp1[0]["email"];
+        $proptime = $temp1[0]["proptime"];
+        $clicked = $temp1[0]["clicked"];
+        $userdata = $this->loginModel->verifyEmail($EMAIL);
+        $uid=$userdata['UID'];
+        $this->timingModel->timeclick($uid,$EMAIL,$proptime,$clicked);
+        exit;
+    }
     public function verify()
     {
         $data = [];
@@ -36,7 +56,7 @@ class UserHome extends Controller
                 {
                     if($PASSWORD == $userdata['PASSWORD'])
                     {
-                        $log_time = new Time('now');
+                        $log_time = time();
                         $newdata = [
                             'email'  =>  $EMAIL,
                             'logged_in_time' => $log_time,
@@ -47,7 +67,7 @@ class UserHome extends Controller
                             echo $log_time;
                             $this->session->set($newdata);
                             if($this->session->get('email')!=''){
-                                return redirect()->to(base_url('FAH/UserHome/user_home'));
+                                return redirect()->to(base_url('FAH/UserHome/user_home/'));
                             }
                         }
                         else if($userdata['RID'] == '2')
@@ -87,7 +107,15 @@ class UserHome extends Controller
 
     public function user_home(){
         if($this->session->get('email')!=''){
-            echo view("templates/header");
+            $EMAIL = $this->session->get('email');
+            $userdata = $this->loginModel->verifyEmail($EMAIL);
+            $data['email'] = $this->session->get('email');
+            $data['logged_in_time']= $this->session->get('logged_in_time');
+            $email=$data['email'];
+            $logged_in_time=$data['logged_in_time'];
+            $uid = $userdata['UID'];
+            $result = $this->timingModel->timeclick($uid,$email,$logged_in_time,$clicked='login');
+            echo view("templates/header",$data);
 
             // $pin="68137";
             // $date=array();
@@ -120,6 +148,8 @@ class UserHome extends Controller
             //     $atum[$i]="../public/assets/images/".$atmostype.".png";
             // }
             // , ["currentdate"=>$currentdate, "currenttemp"=>$currenttemp, "feeltemp"=>$feeltemp, "wind"=>$wind, "cweather"=>$cweather, "date"=>$date, "maxtemp"=>$maxtemp, "mintemp"=>$mintemp, "atum"=>$atum ]
+
+
             $name=[];
             $time=[];
             $comment=[];

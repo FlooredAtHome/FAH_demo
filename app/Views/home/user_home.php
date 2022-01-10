@@ -11,6 +11,12 @@
 <p class="size-s mb-1">Job Remaining Balance</p>
 <h3>$250,000.00</h3><br>
 <a href="#" class="btn btn-success float-none size-s text-decoration-none">Make A Payment</a>
+<!-- <form action="proptime">
+<button type="submit" ><a href="../public/assets/pdf/users.pdf" type="application/pdf" class="btn btn-success float-none size-s text-decoration-none mt-2" onclick="proptime('prop')" >Proposal</a></button>
+</form> -->
+<a href="#" type="application/pdf" class="btn btn-success float-none size-s text-decoration-none mt-2" onclick="proptime('prop')" >Proposal</a>
+<a href="#" type="application/pdf" class="btn btn-success float-none size-s text-decoration-none mt-2" onclick="proptime('inv')" >Invoice</a>
+
     </div>
 
 

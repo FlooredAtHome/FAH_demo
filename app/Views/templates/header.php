@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -16,7 +15,6 @@
    
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script type="text/javascript" src="../public/assets/js/header.js"></script>
-<script type="text/javascript" src="../public/assets/js/weather.js"></script>
 <script type="text/javascript" src="../public/assets/js/lightslider.js"></script>
     <link rel="stylesheet" href="../public/assets/css/style.css">
     <link type="text/css" rel="stylesheet" href="../public/assets/css/lightslider.css" />
@@ -33,7 +31,8 @@
             </div>
             <div class="justify-content-between">
             <div class="me-5"><strong>Project Managers</strong><br>
-            Mahek Savani: &nbsp; <a href="tel:contact">123456789</a></div>
+            <!-- <p id="user"><#?= esc($email)?></p>  -->
+            &nbsp; <a href="tel:contact">123456789</a></div>
             </div>
             <button id="logout" type="button" class="btn custbtn" style="" ><a href="<?= base_url('FAH/Login/logout');?>" style="color:white;">Logout</a></button>
         </div>

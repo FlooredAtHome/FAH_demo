@@ -32,7 +32,6 @@ $routes->setAutoRoute(true);
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'Login::user');
-
 $routes->group("api", function ($routes) {
 
     $routes->post("insert", "FahAPI::create");

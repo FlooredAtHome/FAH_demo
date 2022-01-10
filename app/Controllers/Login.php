@@ -14,12 +14,15 @@ class Login extends Controller
         helper('form');
         $this->loginModel = new LoginModel();
         $this->session = session();
-        $this->session->destroy();
     }
     public function user()
     {
-        return view("Login/user");
-
+        if($this->session->get('email') != ''){
+            return redirect()->to(base_url('FAH/UserHome/user_home'));
+        }
+        else{
+        echo view('Login/user');
+    }
     }
     public function reset_password_view()
     {
@@ -43,18 +46,23 @@ class Login extends Controller
                 {
                     if($PASSWORD == $userdata['PASSWORD'])
                     {
-                        $log_time = new Time('now');
+                        $temp_log_time = new Time('now');
+                        $log_time=$temp_log_time->format('Y-m-d H:i:s');
                         $newdata = [
+                            'title'=>'Vatsal',
                             'email'  =>  $EMAIL,
                             'logged_in_time' => $log_time,
                         ];
+                        var_dump($newdata);
+                        exit;
                         
                         if($userdata['RID'] == '3')
                         {
-                            echo $log_time;
                             $this->session->set($newdata);
                             if($this->session->get('email')!=''){
-                                return redirect()->to(base_url('FAH/Login/user_home'));
+                                echo view('templates/header', ["newdata"=>$newdata]);
+                                echo view('Login/user_home');
+                                // return redirect()->to(base_url('FAH/Login/user_home/$newdata'));
                             }
                         }
                         else

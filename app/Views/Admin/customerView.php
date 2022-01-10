@@ -15,12 +15,13 @@
    
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script type="text/javascript" src="../public/assets/js/header.js"></script>
+<script type="text/javascript" src="../public/assets/js/.js"></script>
 <script type="text/javascript" src="../public/assets/js/weather.js"></script>
+<script type="text/javascript" src="../public/assets/js/logger.js"></script>
 <script type="text/javascript" src="../public/assets/js/lightslider.js"></script>
     <link rel="stylesheet" href="../public/assets/css/style.css">
     <link type="text/css" rel="stylesheet" href="../public/assets/css/lightslider.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    
 
 </head>
 <body>
@@ -62,8 +63,8 @@
 <hr class="m-1">
 <p class="size-s mb-1">Job Remaining Balance</p>
 <h3>$250,000.00</h3><br>
-<a href="#" class="btn btn-success float-none size-s text-decoration-none">Make A Payment</a>
-    </div>
+<a href="#" class="btn btn-success float-none size-s text-decoration-none">Make A Payment</a><br>
+</div>
 
 
 
@@ -259,7 +260,59 @@
     </div> -->
 
     <div class="col-lg-8 col-md-12 bg-white ml-2 cust-right-border text-center p-3">
-        
+    <span onclick="switchlog('proptable')" class="mt-2 badge rounded-pill bg-primary">Proposal</span>
+<span onclick="switchlog('invtable')" class="badge rounded-pill bg-secondary">Invoice</span>
+<span onclick="switchlog('logintable')" class="badge rounded-pill bg-success">Login</span>
+<div class="col-12" id="proptable">
+<table class="table table-striped table-hover">
+  <thead>
+      <th>Prop Time</th>
+  </thead>
+  <tbody>
+    <?php   for($i=0;$i<count($LOGS[0]);$i++)
+            {
+                $temp1 = json_encode($LOGS[0][$i],true);
+                $temp2 = json_decode($temp1,true);
+                ?><tr><td><?php echo $temp2["STRINGTIME"]; ?></td></tr><?php
+            }      
+    ?>
+  </tbody>
+</table>
+</div> 
+
+<div class="col-12" id="invtable">
+<table class="table table-striped table-hover">
+  <thead>
+      <th>Invoice Time</th>
+  </thead>
+  <tbody>
+    <?php   for($i=0;$i<count($LOGS[1]);$i++)
+            {
+                $temp1 = json_encode($LOGS[1][$i],true);
+                $temp2 = json_decode($temp1,true);
+                ?><tr><td><?php echo $temp2["STRINGTIME"]; ?></td></tr><?php
+            }      
+    ?>
+  </tbody>
+</table>
+</div> 
+
+<div class="col-12" id="logintable">
+<table class="table table-striped table-hover">
+  <thead>
+      <th>Login Time</th>
+  </thead>
+  <tbody>
+    <?php   for($i=0;$i<count($LOGS[2]);$i++)
+            {
+                $temp1 = json_encode($LOGS[2][$i],true);
+                $temp2 = json_decode($temp1,true);
+                ?><tr><td><?php echo $temp2["STRINGTIME"]; ?></td></tr><?php
+            }      
+    ?>
+  </tbody>
+</table>
+</div> 
     </div>
 
 <div class="col-lg-4 col-md-12 bg-white ml-2 p-3">

@@ -8,6 +8,7 @@ class Home extends BaseController
 {
     public function index()
     {
-        return view("Home/login");
+        echo "Hello";
+        echo "Vatsal Branch addedd";
     }
 }
