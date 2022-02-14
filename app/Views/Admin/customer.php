@@ -24,7 +24,7 @@
                         <tr>
                         <td class="text-center">
                           <!-- <form action="customerView" method="post">
-                            <input type="text" name="UID" value="<?=$values['UID']?>" class="d-none"/> -->
+                            <input type="text" name="UID" value="<#?=$values['UID']?>" class="d-none"/> -->
                             <button type="submit" name="submit" class="btn custbtn"><a class="text-decoration-none" href="customerView?id=<?=$values['UID']?>" style="color:white;">View</a></button>
                           <!-- </form> -->
                         </td>

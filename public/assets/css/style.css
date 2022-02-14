@@ -288,7 +288,7 @@ font-size:11px !important;
 }
 
 .commentbody {
-  height: 300px;
+  max-height: 450px;
   overflow-y: auto; 
   overflow-x: hidden;
 }
@@ -357,5 +357,3 @@ font-size:11px !important;
   background-color: #182c6d !important; 
   color: white !important;
 }
-
-

@@ -30,21 +30,6 @@ $(function () {
             url: "http://localhost/FAH/UserHome/add_comment",
             data: $('#comment_form').serialize(),
             dataType: "html",
-            beforeSend: function () {
-                $('#comment_wrapper').block({
-                    message: 'Please wait....',
-                    css: {
-                        border: 'none',
-                        padding: '15px',
-                        backgroundColor: '#ccc',
-                        '-webkit-border-radius': '10px',
-                        '-moz-border-radius': '10px'
-                    },
-                    overlayCSS: {
-                        backgroundColor: '#ffe'
-                    }
-                });
-            },
             success: function (comment) {
                 var reply_id = $("#reply_id").val();
                 if (reply_id == "") {
@@ -66,7 +51,13 @@ $(function () {
                 $("#cancel-comment-reply-link").hide();
                 $("#comment_wrapper").prepend($("#comment_form_wrapper"));
                 $('#comment_wrapper').unblock();
-            }
+
+            },
+            error: function() {
+                alert('ajax error');
+              }
         });
     });
 });
+
+

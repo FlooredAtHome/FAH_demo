@@ -4,6 +4,7 @@ namespace App\Controllers;
 use App\Models\CustomerModel;
 use App\Models\VendorModel;
 use App\Models\LoginModel;
+use App\Models\TimingModel;
 use App\Models\CommentModel;
 
 
@@ -17,6 +18,7 @@ class Admin extends Controller
         $this->customerModel = new CustomerModel();
         $this->vendorModel = new VendorModel();
         $this->commentModel = new CommentModel();
+        $this->timingModel = new TimingModel();
         $this->session = session();
     }
     public function index()
@@ -267,8 +269,9 @@ class Admin extends Controller
             $details = $this->loginModel->getDetails($UID);
             $pid = $details['PID'];
             $model = new CommentModel();
+            $logs = $this->timingModel->displayall($UID);
             $comments = $model->get_comments($pid);
-            echo view('Admin/customerView',["pid"=>$pid, "comments"=>$comments]);
+            echo view('Admin/customerView',["pid"=>$pid, "comments"=>$comments, "LOGS" => $logs]);
         }
         else
         {
@@ -295,10 +298,8 @@ class Admin extends Controller
 			$model = new CommentModel();
             $resp = $model->add_comment($data);
             
-            
-			
-			helper("custom");
-			
+			var_dump($resp);
+
             if ($resp != NULL) 
             {
                 foreach ($resp as $row) 
@@ -317,6 +318,14 @@ class Admin extends Controller
         } else {
             echo 'Error: Please enter your comment';
         }
+    }
+    public function Logloadhandler()
+    {
+        $temp1_1 = file_get_contents('php://input',true);
+        $temp1 = json_decode($temp1_1,true);
+        $uid= $temp1[0]["uid"];
+        $rep = $temp1[0]["rep"];
+        var_dump($rep);
     }
 }
 

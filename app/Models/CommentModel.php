@@ -80,10 +80,8 @@ class CommentModel extends Model
                 // HTML for comment item containing childrens (open)
                 $html[] = sprintf(
                         '%1$s<li id="li_comment_%2$s">' .
-                        '<div><span class="commenter">%3$s</span></div>' .
-                        '%1$s%1$s<div><span class="comment_date">%5$s</span></div>' .
-                        '%1$s%1$s<div style="margin-top:4px;">%4$s</div>' .
-                        '%1$s%1$s<a href="#" class="reply_button fa fa-reply" id="%2$s"></a>', $tab, // %1$s = tabulation
+                        '<div><span class="commenter">%3$s</span>%1$s%1$s<span class="comment_date">%5$s</span></div>' .
+                        '%1$s%1$s<div style="margin-top:4px;margin-bottom:20px;">%4$s<a href="#" class="reply_button text-decoration-none fa fa-reply" style="font-size:28px;color:#182c6d" id="%2$s"></a></div>', $tab, // %1$s = tabulation
                         $option['value']->comment_id, //%2$s id
                         $option['value']->commenter,
                         $option['value']->comment_text, // %4$s = comment
@@ -98,10 +96,8 @@ class CommentModel extends Model
                 // HTML for comment item with no children (aka "leaf") 
                 $html[] = sprintf(
                         '%1$s<li id="li_comment_%2$s">' .
-                        '<div><span class="commenter">%3$s</span></div>' .
-                        '%1$s%1$s<div><span class="comment_date">%5$s</span></div>' .
-                        '%1$s%1$s<div style="margin-top:4px;">%4$s</div>' .
-                        '%1$s%1$s<a href="#" class="reply_button fa fa-reply" id="%2$s"></a>' .
+                        '<div><span class="commenter">%3$s</span>%1$s%1$s<span class="comment_date">%5$s</span></div>' .
+                        '%1$s%1$s<div style="margin-top:4px;margin-bottom:20px;">%4$s<a href="#" class="reply_button text-decoration-none fa fa-reply"  style="font-size:28px;color:#182c6d" id="%2$s"></a></div>'.
                         '%1$s</li>', str_repeat("\t", ( count($parent_stack) + 1 ) * 2 - 1), // %1$s = tabulation
                         $option['value']->comment_id, //%2$s id
                         $option['value']->commenter,

@@ -14,12 +14,17 @@ class Login extends Controller
         helper('form');
         $this->loginModel = new LoginModel();
         $this->session = session();
-        $this->session->destroy();
     }
     public function user()
     {
-        return view("Login/user");
-
+        if($this->session->get('email') != '')
+        {
+            return redirect()->to(base_url('FAH/UserHome/user_home'));
+        }
+        else
+        {
+            echo view('Login/user');
+        }
     }
     public function reset_password_view()
     {
@@ -43,7 +48,7 @@ class Login extends Controller
                 {
                     if($PASSWORD == $userdata['PASSWORD'])
                     {
-                        $log_time = new Time('now');
+                        $log_time = time();
                         $newdata = [
                             'email'  =>  $EMAIL,
                             'logged_in_time' => $log_time,
@@ -54,23 +59,24 @@ class Login extends Controller
                             echo $log_time;
                             $this->session->set($newdata);
                             if($this->session->get('email')!=''){
-                                return redirect()->to(base_url('FAH/Login/user_home'));
+                                return redirect()->to(base_url('FAH/UserHome/user_home'));
                             }
                         }
-                        else
+                        else if($userdata['RID'] == '2')
                         {
-                            if($userdata['RID'] == '2')
+                            echo "Welcome Vendor";
+                        }
+                        else if($userdata['RID'] == '1')
+                        {
+                            //$this->session->destroy();
+                            echo $log_time;
+                            $this->session->set($newdata);
+                            if($this->session->get('email')!='')
                             {
-                                echo "Welcome Vendor";
-                            }
-                            else
-                            {
-                                if($userdata['RID'] == '1')
-                                {
-                                    echo "Welcome admin";
-                                }
+                                return redirect()->to(base_url('FAH/Admin/index'));
                             }
                         }
+                     
                     }
                     else
                     {

@@ -11,7 +11,8 @@
             <p class="size-s mb-1">Job Remaining Balance</p>
             <h3>$250,000.00</h3><br>
             <a href="#" class="btn btn-success float-none size-s text-decoration-none">Make A Payment</a><br>
-            <a href="../public/assets/pdf/users.pdf" type="application/pdf" class="btn btn-success float-none size-s text-decoration-none mt-2" >Proposal</a>
+            <a href="#" type="application/pdf" class="btn btn-success float-none size-s text-decoration-none mt-2" onclick="proptime('prop')" >Proposal</a>
+            <a href="#" type="application/pdf" class="btn btn-success float-none size-s text-decoration-none mt-2" onclick="proptime('inv')" >Invoice</a>
         </div>
 
         <div class="col-lg-6 col-md-12 bg-white ml-2 cust-right-border text-center p-3">
@@ -189,15 +190,7 @@
 
 <div class="container mt-3">
     <div class="row">
-        <!-- <div class=" col-lg-3 col-md-12 p-2 text-center bg-white cust-right-border p-3">
-        
-        </div> -->
-
-        <div class="col-lg-8 col-md-12 bg-white ml-2 cust-right-border text-center p-3">
-            
-        </div>
-
-        <div class="col-lg-4 col-md-12 bg-white ml-2 p-3">
+        <div class=" col-lg-12 col-md-12 p-2 bg-white cust-right-border p-3">
             <div class="row bootstrap snippets bootdeys">
                 <div class='fullpost clearfix'>
                     <div class='entry'>
@@ -207,13 +200,13 @@
                                 <h4>Comment Panel<a href="javascript:void(0);" id="cancel-comment-reply-link">Cancel Reply</a></h4>
                                 <form id="comment_form" name="comment_form" action="" method="post">
                                     <div>
-                                        <textarea name="comment_text" placeholder="Write a comment here..." id="comment_text" rows="6"></textarea>
+                                        <textarea name="comment_text" placeholder="Write a comment here..." id="comment_text" rows="5"></textarea>
                                     </div>
                                     <div>
                                         <input type="hidden" name="content_id" id="content_id" value="<?=$pid?>"/>
                                         <input type="hidden" name="reply_id" id="reply_id" value=""/>
                                         <input type="hidden" name="depth_level" id="depth_level" value=""/>
-                                        <input type="submit" name="comment_submit" id="comment_submit" value="Post Comment" class="button"/>
+                                        <input type="submit" name="comment_submit" id="comment_submit" value="Post Comment" onClick="refreshPage()" class="button text-decoration-none custbtn "/>
                                     </div>
                                 </form>
                             </div>
@@ -229,6 +222,10 @@
         </div>
     </div>
 </div>
-
+<script>
+function refreshPage(){
+    window.location.reload();
+} 
+</script>
 </body>
 </html>

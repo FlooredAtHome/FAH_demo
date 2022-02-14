@@ -19,6 +19,8 @@
         <script type= 'text/javascript' src="<?php echo base_url(); ?>/FAH/public/assets/js/jquery-ui-1.10.3-custom.min.js"></script>
         <script type= 'text/javascript' src="<?php echo base_url(); ?>/FAH/public/assets/js/jquery_blockUI.js"></script>
         <script type= 'text/javascript' src="<?php echo base_url(); ?>/FAH/public/assets/js/comments_blog.js"></script>
+        <script type= 'text/javascript' src="<?php echo base_url(); ?>/FAH/public/assets/js/header.js"></script>
+        <script type= 'text/javascript' src="<?php echo base_url(); ?>/FAH/public/assets/js/logger.js"></script>
    
 <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script> -->
 <script type="text/javascript" src="../public/assets/js/header.js"></script>
@@ -38,6 +40,7 @@
             </div>
             <div class="justify-content-between">
             <div class="me-5"><strong>Project Managers</strong><br>
+            <p id="user"><?= esc($email)?></p>
             Mahek Savani: &nbsp; <a href="tel:contact">123456789</a></div>
             </div>
             <button id="logout" type="button" class="btn custbtn" style="" ><a href="<?= base_url('FAH/Login/logout');?>" style="color:white;">Logout</a></button>
