@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use CodeIgniter\Controller;
 use App\Models\LoginModel;
+use App\Models\ProjectModel;
 use App\Models\CommentModel;
 use App\Models\TimingModel;
 use CodeIgniter\I18n\Time;
@@ -16,6 +17,7 @@ class UserHome extends Controller
         $this->timingModel = new TimingModel();
         helper('form');
         $this->loginModel = new LoginModel();
+        $this->projectModel = new ProjectModel();
         $this->commentModel = new CommentModel();
         $this->session = session();
     }
@@ -64,9 +66,16 @@ class UserHome extends Controller
                         
                         if($userdata['RID'] == '3')
                         {
-                            echo $log_time;
                             $this->session->set($newdata);
                             if($this->session->get('email')!=''){
+                                $EMAIL = $this->session->get('email');
+                                $userdata = $this->loginModel->verifyEmail($EMAIL);
+                                $data['email'] = $this->session->get('email');
+                                $data['logged_in_time']= $this->session->get('logged_in_time');
+                                $email=$data['email'];
+                                $UID = $userdata['UID'];
+                                $logged_in_time=$data['logged_in_time'];
+                                $result = $this->timingModel->timeclick($UID,$email,$logged_in_time,$clicked='login');
                                 return redirect()->to(base_url('FAH/UserHome/user_home'));
                             }
                         }
@@ -104,7 +113,41 @@ class UserHome extends Controller
             }
         }        
     }
+    public function getRecordById($module,$pid,$token)
+    {
+        $headers = array('Authorization: Zoho-oauthtoken '.$token);
+	    $ch = curl_init('https://www.zohoapis.com/crm/v2/'.$module.'/'.$pid);
+	    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	    curl_setopt($ch, CURLOPT_VERBOSE, 1);//standard i/o streams
+	    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);// Turn off the server and peer verification
+    	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+    	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//Set to return data to string ($response)
+    	$response = curl_exec($ch);
+    // 	error_log($response);
+    	curl_close($ch);
+    	$json_for_get_record = json_decode($response, true);
+        $record_data = $json_for_get_record["data"][0] ;
+    	return $record_data;
+            
+    }
 
+    public function searchRecords($module,$criteria,$token)
+    {
+
+        //print_r($criteria);
+        $headers = array('Authorization: Zoho-oauthtoken '.$token);
+        $ch = curl_init('https://www.zohoapis.com/crm/v2/'.$module.'/search?criteria='.urlencode($criteria));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_VERBOSE, 1);//standard i/o streams
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);// Turn off the server and peer verification
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//Set to return data to string ($response)
+        $response = curl_exec($ch);
+        curl_close($ch);
+        $json_for_search_response = json_decode($response, true);
+
+	return $json_for_search_response;
+    }
     public function user_home()
     {
         if($this->session->get('email')!=''){
@@ -114,46 +157,34 @@ class UserHome extends Controller
             $data['logged_in_time']= $this->session->get('logged_in_time');
             $email=$data['email'];
             $UID = $userdata['UID'];
-            $logged_in_time=$data['logged_in_time'];
-            $result = $this->timingModel->timeclick($UID,$email,$logged_in_time,$clicked='login');
+            $projectdata = $this->projectModel->projectDetails($UID);
+            $ZC_PO_ID = $projectdata['ZC_PO_ID'];
             $pid = $userdata['PID'];
             $model = new CommentModel();
             $comments = $model->get_comments($pid);
-            echo view("templates/header",$data);
-
-            // $pin="68137";
-            // $date=array();
-            // $maxtemp=array();
-            // $mintemp=array();
-            // $atum=array();
-    
-            // $content = file_get_contents("http://dataservice.accuweather.com/locations/v1/postalcodes/search?apikey=LdP2tFj700FeHm9aX2rEnAnioatQhF8l&q=".$pin."");
-            // $result  = json_decode($content);
-            // $locationid = $result[0]->Key;
-    
-            // $data = file_get_contents("http://dataservice.accuweather.com/forecasts/v1/daily/5day/location=".$locationid."?apikey=LdP2tFj700FeHm9aX2rEnAnioatQhF8l&details=true&metric=true");
-            // $wdata  = json_decode($data);
-            
-            // $currentdate=date('D,M d 20y', strtotime($wdata->DailyForecasts[0]->Date));
-            // $currenttemp=$wdata->DailyForecasts[0]->RealFeelTemperature->Maximum->Value;
-            // $feeltemp=$wdata->DailyForecasts[0]->RealFeelTemperatureShade->Maximum->Value;
-            // $wind=$wdata->DailyForecasts[0]->Day->Wind->Speed->Value;
-            // $cweather=$wdata->DailyForecasts[0]->Day->IconPhrase;
-            // $atum0=$wdata->DailyForecasts[0]->Day->IconPhrase;
-            // $atum[0]="../public/assets/images/".$atum0.".png";
-            
-            // for($i=1;$i<5;$i++)
-            // {
-            //     $date[$i]=date('D,M d', strtotime($wdata->DailyForecasts[$i]->Date));
-            //     $maxtemp[$i]=$wdata->DailyForecasts[$i]->Temperature->Maximum->Value;
-            //     $mintemp[$i]=$wdata->DailyForecasts[$i]->Temperature->Minimum->Value;
-            //     $iphrase=$wdata->DailyForecasts[$i]->Day->IconPhrase;
-            //     $atmostype=preg_replace('/[^a-zA-Z ]/', '', $iphrase);
-            //     $atum[$i]="../public/assets/images/".$atmostype.".png";
-            // }
-            // , ["currentdate"=>$currentdate, "currenttemp"=>$currenttemp, "feeltemp"=>$feeltemp, "wind"=>$wind, "cweather"=>$cweather, "date"=>$date, "maxtemp"=>$maxtemp, "mintemp"=>$mintemp, "atum"=>$atum ]
-            
-            echo view("home/user_home", ["pid"=>$pid, "comments"=>$comments]);
+            $token = file_get_contents("https://fahbacksym.com/FAH/get_token.php?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9");
+            $po_data = $this->getRecordById("Deals",$ZC_PO_ID,$token);
+            $mp_images = $this->searchRecords("Magicplan_Images","((Potential:equals:".$ZC_PO_ID.")and(Type:equals:Outside Picture))",$token) ;
+            $proposals = $this->searchRecords("Quotes","(Deal_Name:equals:".$ZC_PO_ID.")",$token);
+            $proposal = [];
+            $url = [];
+            foreach($proposals['data'] as $proposal)
+            {
+                if($proposal['Ready_To_Send']!=NULL)
+                {
+                    $url[$proposal['id']] = $proposal['PandaDoc_PDF'];
+                }
+            }
+            if(count($mp_images) > 0 )
+            {
+                if(strlen($mp_images["data"][0]["Image_URL"])>0)
+                {
+                    $mp_image_url = $mp_images["data"][0]["Image_URL"];
+                }
+            }
+            $email = $po_data["Owner"]["email"];
+			$mname = $po_data["Owner"]["name"];
+            echo view("home/user_home", ["pid"=>$pid, "comments"=>$comments,"po_data"=>$po_data,"mp_image_url"=>$mp_image_url,"email"=>$email,"name"=>$mname,"urls"=>$url]);
         }
         else{
             return redirect()->to(base_url('FAH'));
@@ -184,10 +215,10 @@ class UserHome extends Controller
             {
                 foreach ($resp as $row) 
                 {
-                    $date = mysql_to_php_date($row->comment_date);
+                   // $date = mysql_to_php_date($row->comment_date);
                     echo "<li id=\"li_comment_{$row->comment_id}\">" .
                     "<div><span class=\"commenter\">{$commenter}</span></div>".
-                    "<div><span class=\"comment_date\">{$date}</span></div>" .
+                    "<div><span class=\"comment_date\">{$row->comment_date}</span></div>" .
                     "<div style=\"margin-top:4px;\">{$row->comment_text}</div>" .
                     "<a href=\"#\" class=\"reply_button\" id=\"{$row->comment_id}\">reply</a>" .
                     "</li>";

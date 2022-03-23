@@ -43,7 +43,7 @@ class CommentModel extends Model
         if ($inserted_id > 0) {
             $query = $this->db->query('SELECT bc.comment_id, bc.pid, bc.commenter, bc.parent_id, bc.comment_text, 
                     bc.comment_date
-                    FROM ' . $this->comments . ' bc
+                    FROM comments bc
                     WHERE bc.comment_id=' . $inserted_id);
             return $query->getResult();
         }
@@ -65,7 +65,7 @@ class CommentModel extends Model
         $parent_stack = array();
 
         // HTML wrapper for the comment (open)
-        $html[] = '<ul class="comment">';
+        $html[] = '<ul class="comment" style="border-radius:10px;">';
 		
 		//while ($loop && ( ( $option = each($children[$parent]) ) || ( $parent > $root_id ) )) { //PHP < 7.2
 		while ($loop && ( ( $option = my_each($children[$parent]) ) || ( $parent > $root_id ) )) { //PHP 7.2+
@@ -81,7 +81,7 @@ class CommentModel extends Model
                 $html[] = sprintf(
                         '%1$s<li id="li_comment_%2$s">' .
                         '<div><span class="commenter">%3$s</span>%1$s%1$s<span class="comment_date">%5$s</span></div>' .
-                        '%1$s%1$s<div style="margin-top:4px;margin-bottom:20px;">%4$s<a href="#" class="reply_button text-decoration-none fa fa-reply" style="font-size:28px;color:#182c6d" id="%2$s"></a></div>', $tab, // %1$s = tabulation
+                        '%1$s%1$s<div style="margin-top:4px;margin-bottom:20px;">%4$s<a href="#" class="reply_button text-decoration-none fa fa-reply" style="font-size:20px;color:#182c6d" id="%2$s"></a></div>', $tab, // %1$s = tabulation
                         $option['value']->comment_id, //%2$s id
                         $option['value']->commenter,
                         $option['value']->comment_text, // %4$s = comment
@@ -97,7 +97,7 @@ class CommentModel extends Model
                 $html[] = sprintf(
                         '%1$s<li id="li_comment_%2$s">' .
                         '<div><span class="commenter">%3$s</span>%1$s%1$s<span class="comment_date">%5$s</span></div>' .
-                        '%1$s%1$s<div style="margin-top:4px;margin-bottom:20px;">%4$s<a href="#" class="reply_button text-decoration-none fa fa-reply"  style="font-size:28px;color:#182c6d" id="%2$s"></a></div>'.
+                        '%1$s%1$s<div style="margin-top:4px;margin-bottom:20px;">%4$s<a href="#" class="reply_button text-decoration-none fa fa-reply"  style="font-size:20px;color:#182c6d" id="%2$s"></a></div>'.
                         '%1$s</li>', str_repeat("\t", ( count($parent_stack) + 1 ) * 2 - 1), // %1$s = tabulation
                         $option['value']->comment_id, //%2$s id
                         $option['value']->commenter,

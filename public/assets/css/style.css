@@ -10,6 +10,23 @@
       height: 100%;
       font-family: 'Roboto', sans-serif;
   }
+  .borderless td, .borderless th {
+    border: none;
+  }
+
+  .labels {
+    color:#787878; 
+    font-size:14px; 
+    padding-bottom: 5px;
+    /* padding:0 5px 0 0; */
+  }
+
+  .values {
+    color:#465b66;
+    font-size:14px; 
+    padding-bottom:5px;
+    word-wrap:break-word;
+  }
 
   a {
       font-family: Roboto;
@@ -23,6 +40,9 @@
     -moz-transition: all 0.4s;
   }
   
+  a.cuslink {
+    color: #182c6d !important ;
+  }
   a:focus {
       outline: none !important;
   }
@@ -288,7 +308,14 @@ font-size:11px !important;
 }
 
 .commentbody {
-  max-height: 450px;
+  max-height: 400px;
+  overflow-y: auto; 
+  overflow-x: hidden;
+}
+
+
+.logsbody {
+  max-height: 600px;
   overflow-y: auto; 
   overflow-x: hidden;
 }
@@ -357,3 +384,6 @@ font-size:11px !important;
   background-color: #182c6d !important; 
   color: white !important;
 }
+
+
+ 

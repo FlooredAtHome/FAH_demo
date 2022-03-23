@@ -27,7 +27,7 @@ $(function () {
         }
         $.ajax({
             type: "POST",
-            url: "http://localhost/FAH/UserHome/add_comment",
+            url: "http://localhost/FAH/Admin/add_comment",
             data: $('#comment_form').serialize(),
             dataType: "html",
             success: function (comment) {
@@ -51,6 +51,7 @@ $(function () {
                 $("#cancel-comment-reply-link").hide();
                 $("#comment_wrapper").prepend($("#comment_form_wrapper"));
                 $('#comment_wrapper').unblock();
+                location.reload();
 
             },
             error: function() {

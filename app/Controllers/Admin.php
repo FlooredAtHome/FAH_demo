@@ -4,8 +4,13 @@ namespace App\Controllers;
 use App\Models\CustomerModel;
 use App\Models\VendorModel;
 use App\Models\LoginModel;
+use App\Models\ProjectModel;
 use App\Models\TimingModel;
 use App\Models\CommentModel;
+use App\Models\APIModel;
+use App\Models\APILoginModel;
+use CodeIgniter\RESTful\ResourceController;
+use \Firebase\JWT\JWT;
 
 
 use CodeIgniter\Controller;
@@ -14,11 +19,13 @@ class Admin extends Controller
 {
     function __construct() 
     {
+        $this->rc = new ResourceController();
         $this->loginModel = new LoginModel();
         $this->customerModel = new CustomerModel();
         $this->vendorModel = new VendorModel();
         $this->commentModel = new CommentModel();
         $this->timingModel = new TimingModel();
+        $this->projectModel = new ProjectModel();
         $this->session = session();
     }
     public function index()
@@ -27,28 +34,13 @@ class Admin extends Controller
         { 
             $EMAIL = $this->session->get('email');
             $customerdata = $this->customerModel->customerDetails($EMAIL);
-            echo view("Admin/admin");
-            echo view("Admin/customer", ["customerdata"=>$customerdata]);
-        }
-        else
-        {
-            return redirect()->to(base_url('FAH'));
-        }
-    }
-    public function vendor()
-    {
-        if($this->session->has("email"))
-        {
-            $EMAIL = $this->session->get('email');
             $vendordata = $this->vendorModel->vendorDetails($EMAIL);
-            echo view("Admin/admin");
-            echo view("Admin/vendor", ["vendordata"=>$vendordata]);
+            echo view("Admin/admin", ["customerdata"=>$customerdata, "vendordata"=>$vendordata]);
         }
         else
         {
             return redirect()->to(base_url('FAH'));
         }
-
     }
     public function updateCustomer()
     {
@@ -97,18 +89,18 @@ class Admin extends Controller
                 if($result == true)
                 {
                     $this->session->setTempdata('successvend','Details updated successfully!',3);
-                    return redirect()->to(base_url('FAH/Admin/vendor'));
+                    return redirect()->to(base_url('FAH/Admin/index'));
                 }
                 else
                 {
                     $this->session->setTempdata('errorvend','Sorry! Try again after some time.',3);
-                    return redirect()->to(base_url('FAH/Admin/vendor'));
+                    return redirect()->to(base_url('FAH/Admin/index'));
                 }
             }
             else
             {
                 $this->session->setTempdata('errorvend','Sorry! Try again after some time.',3);
-                return redirect()->to(base_url('FAH/Admin/vendor'));
+                return redirect()->to(base_url('FAH/Admin/index'));
             }
         }
         else
@@ -130,18 +122,18 @@ class Admin extends Controller
                 if($result == true)
                 {
                     $this->session->setTempdata('successvend','Vendor inserted successfully!',3);
-                    return redirect()->to(base_url('FAH/Admin/vendor'));
+                    return redirect()->to(base_url('FAH/Admin/index'));
                 }
                 else
                 {
                     $this->session->setTempdata('errorvend','Sorry! Try again after some time.',3);
-                    return redirect()->to(base_url('FAH/Admin/vendor'));
+                    return redirect()->to(base_url('FAH/Admin/index'));
                 }
             }
             else
             {
                 $this->session->setTempdata('errorvend','Sorry! Try again after some time.',3);
-                return redirect()->to(base_url('FAH/Admin/vendor'));
+                return redirect()->to(base_url('FAH/Admin/index'));
             }
         }
         else
@@ -233,31 +225,66 @@ class Admin extends Controller
                         if($EMAIL->send())
                         {
                             session()->setTempdata('successvend','Reset password link sent to registered email.',3);
-                            return redirect()->to(base_url('FAH/Admin/vendor'));
+                            return redirect()->to(base_url('FAH/Admin/index'));
                         }
                     }
                     else
                     {
                         $this->session->setTempdata('errorvend','Unable to update. Please try again',3);
-                        return redirect()->to(base_url('FAH/Admin/vendor'));
+                        return redirect()->to(base_url('FAH/Admin/index'));
                     }
                 }
                 else
                 {
                     $this->session->setTempdata('errorvend','Sorry! Email does not exists',3);
-                    return redirect()->to(base_url('FAH/Admin/vendor'));
+                    return redirect()->to(base_url('FAH/Admin/index'));
                 }
             }
             else
             {
                 $this->session->setTempdata('errorvend','Sorry! Try again after some time.',3);
-                return redirect()->to(base_url('FAH/Admin/vendor'));
+                return redirect()->to(base_url('FAH/Admin/index'));
             }
         }
         else
         {
             return redirect()->to(base_url('FAH'));
         }
+    }
+    public function getRecordById($module,$pid,$token)
+    {
+        $headers = array('Authorization: Zoho-oauthtoken '.$token);
+	    $ch = curl_init('https://www.zohoapis.com/crm/v2/'.$module.'/'.$pid);
+	    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	    curl_setopt($ch, CURLOPT_VERBOSE, 1);//standard i/o streams
+	    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);// Turn off the server and peer verification
+    	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+    	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//Set to return data to string ($response)
+    	$response = curl_exec($ch);
+    // 	error_log($response);
+    	curl_close($ch);
+    	$json_for_get_record = json_decode($response, true);
+        $record_data = $json_for_get_record["data"][0] ;
+    	return $record_data;
+            
+    }
+
+    public function searchRecords($module,$criteria,$token)
+    {
+
+        //print_r($criteria);
+        $headers = array('Authorization: Zoho-oauthtoken '.$token);
+        $ch = curl_init('https://www.zohoapis.com/crm/v2/'.$module.'/search?criteria='.urlencode($criteria));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_VERBOSE, 1);//standard i/o streams
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);// Turn off the server and peer verification
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//Set to return data to string ($response)
+        $response = curl_exec($ch);
+        curl_close($ch);
+        $json_for_search_response = json_decode($response, true);
+
+	return $json_for_search_response;
     }
     public function customerView()
     {
@@ -268,14 +295,42 @@ class Admin extends Controller
             $UID = intval($_GET['id']);
             $details = $this->loginModel->getDetails($UID);
             $pid = $details['PID'];
+			$projectdata = $this->projectModel->projectDetails($UID);
+            $ZC_PO_ID = $projectdata['ZC_PO_ID'];
             $model = new CommentModel();
             $logs = $this->timingModel->displayall($UID);
             $comments = $model->get_comments($pid);
-            echo view('Admin/customerView',["pid"=>$pid, "comments"=>$comments, "LOGS" => $logs]);
+			$token = file_get_contents("https://fahbacksym.com/FAH/get_token.php?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9");
+            $po_data = $this->getRecordById("Deals",$ZC_PO_ID,$token);
+            $mp_images = $this->searchRecords("Magicplan_Images","((Potential:equals:".$ZC_PO_ID.")and(Type:equals:Outside Picture))",$token) ;
+            $proposals = $this->searchRecords("Quotes","(Deal_Name:equals:".$ZC_PO_ID.")",$token);
+            $proposal = [];
+            $url = [];
+            foreach($proposals['data'] as $proposal)
+            {
+                if($proposal['Ready_To_Send']!=NULL)
+                {
+                    $url[$proposal['id']] = $proposal['PandaDoc_PDF'];
+                }
+            }
+			if(count($mp_images) > 0 )
+            {
+                if(strlen($mp_images["data"][0]["Image_URL"])>0)
+                {
+                    $mp_image_url = $mp_images["data"][0]["Image_URL"];
+                }
+				else
+            	{
+                	$mp_image_url = base_url('public/assets/images/No_Image_Available.jpg');
+            	}
+            }
+			$email = $po_data["Owner"]["email"];
+			$mname = $po_data["Owner"]["name"];
+            echo view('Admin/customerView',["pid"=>$pid,"comments"=>$comments,"LOGS"=>$logs,"po_data"=>$po_data,"mp_image_url"=>$mp_image_url,"email"=>$email,"name"=>$mname,"urls"=>$url]);
         }
         else
         {
-            return redirect()->to(base_url('FAH'));
+            return redirect()->to(base_url('/'));
         }
     }
     public function add_comment() 
@@ -298,23 +353,33 @@ class Admin extends Controller
 			$model = new CommentModel();
             $resp = $model->add_comment($data);
             
-			var_dump($resp);
+            // if ($resp != NULL) 
+            // {
+            //     foreach ($resp as $row) 
+            //     {
+            //         $date=date_create($row->comment_date);
+            //         $time=date_format($date,"F j, Y, g:i a");
+            //     //    $date = mysqli_to_php_date($row->comment_date);
 
-            if ($resp != NULL) 
-            {
-                foreach ($resp as $row) 
-                {
-                    $date = mysql_to_php_date($row->comment_date);
-                    echo "<li id=\"li_comment_{$row->comment_id}\">" .
-                    "<div><span class=\"commenter\">{$commenter}</span></div>".
-                    "<div><span class=\"comment_date\">{$date}</span></div>" .
-                    "<div style=\"margin-top:4px;\">{$row->comment_text}</div>" .
-                    "<a href=\"#\" class=\"reply_button\" id=\"{$row->comment_id}\">reply</a>" .
-                    "</li>";
-                }
-            } else {
-                echo 'Error in adding comment';
-            }
+                    
+
+            //         // $response = [
+            //         //     'status' => 200,
+            //         //     'error' => false,
+            //         //     'messages' => 'Comment added successfully',
+            //         //     'data' => [
+            //         //         'msg' => "Done"
+            //         //     ]
+            //         // ];
+            //         // return $this->rc->respondCreated($response);
+            //         echo "<li id=\"li_comment_{$row->comment_id}\">" .
+            //         "<div><span class=\"commenter\">{$row->commenter}</span><span class=\"comment_date\">{$time}</span></div>".
+            //         "<div style=\"margin-top:4px;margin-bottom:20px;\">{$row->comment_text}<a href=\"#\" class=\"reply_button text-decoration-none fa fa-reply\" style=\"font-size:28px;color:#182c6d\" id=\"{$row->comment_id}\"></a></div>" .
+            //         "</li>";
+            //     }
+            // } else {
+            //     echo 'Error in adding comment';
+            // }
         } else {
             echo 'Error: Please enter your comment';
         }
